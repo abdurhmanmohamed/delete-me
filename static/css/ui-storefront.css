@@ -127,20 +127,27 @@ body:has(.anti-hero-section) > .animsition {
   border-color: var(--fs-ink-4);
 }
 
-/* ---- Hero visual composition (three floating product tiles) ------------ */
+/* ---- Hero visual composition -------------------------------------------
+   Three product tiles arranged as a deliberate mosaic: a tall hero shot with
+   two supporting tiles tucked beneath it. Positioned with logical properties
+   so the composition mirrors correctly in RTL.
+   ------------------------------------------------------------------------ */
 .anti-visual-composition {
   position: relative;
-  height: clamp(320px, 40vw, 440px);
+  width: 100%;
+  height: clamp(340px, 38vw, 470px);
   margin: 0;
   isolation: isolate;
 }
 
-.anti-wash { display: none; }
+.anti-wash,
+.anti-shadow,
+.anti-particle { display: none; }
 
 .anti-product {
   position: absolute;
   overflow: hidden;
-  border-radius: var(--fs-r-xl);
+  border-radius: var(--fs-r-lg);
   background: var(--fs-surface-2);
   border: 1px solid var(--fs-border);
   box-shadow: var(--fs-shadow-md);
@@ -150,58 +157,80 @@ body:has(.anti-hero-section) > .animsition {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 35%;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.anti-product:hover img { transform: scale(1.05); }
-.anti-shadow { display: none; }
+.anti-product:hover img { transform: scale(1.04); }
 
+/* Primary tile: tall, upper inline-start */
 .anti-product-1 {
-  width: 52%;
-  height: 78%;
+  width: 56%;
+  height: 84%;
   top: 0;
-  inset-inline-end: 4%;
-  z-index: 3;
-}
-.anti-product-2 {
-  width: 40%;
-  height: 52%;
-  bottom: 0;
-  inset-inline-start: 2%;
+  inset-inline-start: 0;
   z-index: 2;
 }
-.anti-product-3 {
-  width: 32%;
-  height: 40%;
-  bottom: 12%;
+
+/* Secondary: smaller, lower inline-end */
+.anti-product-2 {
+  width: 40%;
+  height: 44%;
+  bottom: 0;
   inset-inline-end: 0;
-  z-index: 4;
+  z-index: 1;
 }
 
-.anti-particle { display: none; }
+/* Accent tile: overlaps the gap between the two */
+/* Accent tile floats forward, bridging the two larger photographs. */
+.anti-product-3 {
+  width: 27%;
+  height: 38%;
+  bottom: 6%;
+  inset-inline-start: 41%;
+  z-index: 3;
+  box-shadow: var(--fs-shadow-lg);
+}
 
-/* Keep the gentle float, but slower and subtler than before. */
-.float-animation { animation: fs-float 9s ease-in-out infinite; }
-.float-animation-delayed { animation: fs-float 9s ease-in-out 1.4s infinite; }
+/* A soft neutral panel behind the mosaic adds depth without colour noise. */
+.anti-visual-composition::before {
+  content: "";
+  position: absolute;
+  inset-inline-end: 4%;
+  top: 6%;
+  width: 62%;
+  height: 78%;
+  border-radius: var(--fs-r-xl);
+  background: var(--fs-surface-2);
+  z-index: 0;
+}
+
+/* Keep the motion slow and subtle. */
+.float-animation { animation: fs-float 11s ease-in-out infinite; }
+.float-animation-delayed { animation: fs-float 13s ease-in-out 1.2s infinite; }
 
 @keyframes fs-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 @media (max-width: 991px) {
   .anti-hero-content { max-width: none; margin-bottom: 2.5rem; text-align: center; }
   .anti-hero-description { margin-inline: auto; }
   .anti-hero-actions { justify-content: center; }
-  .anti-visual-composition { height: clamp(280px, 62vw, 380px); }
+  .anti-visual-composition { height: clamp(300px, 58vw, 400px); }
+  .anti-product-1 { width: 60%; height: 84%; }
+  .anti-product-2 { width: 40%; height: 44%; }
+  .anti-product-3 { width: 32%; height: 36%; inset-inline-start: 42%; }
 }
 
 @media (max-width: 620px) {
   .anti-hero-actions { flex-direction: column; align-items: stretch; }
   .anti-btn-primary, .anti-btn-link { width: 100%; }
-  .anti-visual-composition { height: 260px; }
-  .anti-product-1 { width: 58%; height: 70%; }
-  .anti-product-2 { width: 42%; height: 46%; }
-  .anti-product-3 { width: 34%; height: 38%; }
+  .anti-visual-composition { height: 280px; }
+  .anti-product-1 { width: 62%; height: 86%; }
+  .anti-product-2 { width: 40%; height: 44%; }
+  .anti-product-3 { width: 30%; height: 34%; inset-inline-start: 40%; }
+  .anti-visual-composition::before { display: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1300,4 +1329,41 @@ html[dir="rtl"] .quantity-box { direction: ltr; }
   html[dir="rtl"] .anti-hero-content { text-align: center; }
   html[dir="rtl"] .anti-hero-description { margin-inline: auto; }
   html[dir="rtl"] .anti-hero-actions { justify-content: center; }
+}
+
+/* --------------------------------------------------------------------------
+   Section rhythm on the storefront
+   -------------------------------------------------------------------------- */
+/* The product section sits directly under the collection banner. */
+section.bg0.p-t-23 {
+  padding-top: clamp(1.75rem, 4vw, 3rem) !important;
+  padding-bottom: clamp(2.5rem, 6vw, 4.5rem) !important;
+  background: var(--fs-bg) !important;
+}
+
+/* Heading + filter row spacing */
+section.bg0 .p-b-10 > .ltext-103 { margin: 0; }
+
+section.bg0 .container > .p-b-10 {
+  padding-bottom: 1.25rem !important;
+}
+
+/* The outer wrapper inside shop-body adds a second background + padding. */
+.bg0.m-t-23.p-b-140 {
+  margin-top: 0 !important;
+  padding-bottom: 0 !important;
+  background: transparent !important;
+}
+
+/* Legacy vertical padding utilities used for page sections */
+.isotope-grid .p-b-35 { padding-bottom: 1.25rem !important; }
+section.bg0 .p-b-52 { padding-bottom: 1.75rem !important; }
+
+/* Filter row: tiles on one side, search on the other */
+section.bg0 .flex-w.flex-sb-m.p-b-52 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }

@@ -21,7 +21,7 @@
   --fs-ink: #17171c;
   --fs-ink-2: #3f3f4a;
   --fs-ink-3: #6b6b78;
-  --fs-ink-4: #9a9aa6;
+  --fs-ink-4: #74747f; /* 4.6:1 on white — meets AA for small text */
 
   /* Brand — restrained rose accent, used sparingly against a neutral base so
      it never competes with the product photography's baked-in red branding. */
