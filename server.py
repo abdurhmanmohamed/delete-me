@@ -30,12 +30,50 @@ cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT':
 
 # app.register_blueprint(analytics_bp)
 login_manager = LoginManager(app)
-app.secret_key='abdomohamed'
-# app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL") 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.yhjnathafjhaqbuzzcql:abdo_mohamd@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
-SUPABASE_URL = 'https://yhjnathafjhaqbuzzcql.supabase.co'
-SUPABASE_KEY = 'sb_publishable_Mce89B-UqmCCIbGzXIBcoA_L6xoQyTQ'
-BUCKET = 'data'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Vercel's filesystem is read-only except for /tmp, so the fallback SQLite file lives there.
+_IS_SERVERLESS = bool(os.getenv("VERCEL"))
+_SEED_DB_PATH = os.getenv("SEED_DB_PATH") or os.path.join(BASE_DIR, "instance", "mariam.db")
+_DEFAULT_SQLITE_PATH = "/tmp/romaire.db" if _IS_SERVERLESS else os.path.join(BASE_DIR, "instance", "mariam.db")
+
+
+def _seed_sqlite_if_empty(path):
+    """On serverless, copy the bundled seed database into /tmp on first cold start.
+
+    Vercel only allows writes under /tmp, and that directory starts empty on every
+    new instance, so the shipped catalogue is restored before SQLAlchemy connects.
+    """
+    if not _IS_SERVERLESS or os.path.exists(path):
+        return
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(_SEED_DB_PATH, "rb") as src, open(path, "wb") as dst:
+            dst.write(src.read())
+        print(f"Seeded {path} from {_SEED_DB_PATH}")
+    except Exception as e:
+        print(f"Seed database copy skipped: {e}")
+
+
+_seed_sqlite_if_empty(_DEFAULT_SQLITE_PATH)
+
+app.secret_key = os.getenv("SECRET_KEY", "abdomohamed")
+
+
+def _normalize_db_url(url):
+    """SQLAlchemy needs the postgresql:// scheme; Supabase/Vercel may hand out postgres://."""
+    if url.startswith("postgres://"):
+        return "postgresql://" + url[len("postgres://"):]
+    return url
+
+
+DATABASE_URL = _normalize_db_url(os.getenv("DATABASE_URL") or "")
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL or f"sqlite:///{_DEFAULT_SQLITE_PATH}"
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+BUCKET = os.getenv("SUPABASE_BUCKET", "data")
 login_manager.login_view = 'login'
 class Base(DeclarativeBase):
     pass
@@ -130,7 +168,25 @@ class ShippingPrice(db.Model):
 
 
 
-with app.app_context():
+def _sniff_image_ext(binary):
+    """Best-effort image extension detection (imghdr was removed in Python 3.13)."""
+    if binary[:3] == b"\xff\xd8\xff":
+        return "jpeg"
+    if binary[:8] == b"\x89PNG\r\n\x1a\n":
+        return "png"
+    if binary[:6] in (b"GIF87a", b"GIF89a"):
+        return "gif"
+    if binary[:4] == b"RIFF" and binary[8:12] == b"WEBP":
+        return "webp"
+    return "png"
+
+
+def _bootstrap_database():
+    """Create tables and apply the app's lightweight column migrations.
+
+    Runs lazily on the first request instead of at import time: on Vercel a cold
+    start must not crash the whole deployment when the database is unreachable.
+    """
     db.create_all()
     from sqlalchemy import text, inspect
     inspector = inspect(db.engine)
@@ -156,6 +212,17 @@ with app.app_context():
             except Exception as e:
                 db.session.rollback()
                 print(f"Migration error (itemdetails table): {e}")
+
+
+_db_bootstrapped = False
+
+
+def ensure_database_ready():
+    global _db_bootstrapped
+    if _db_bootstrapped:
+        return
+    _bootstrap_database()
+    _db_bootstrapped = True
 
 
 @login_manager.user_loader
@@ -507,8 +574,14 @@ def update_order_state():
 
 @app.before_request
 def ensure_session():
+    # Create tables / run small migrations on first request rather than at import,
+    # so an unreachable database cannot break the whole serverless deployment.
+    try:
+        ensure_database_ready()
+    except Exception as e:
+        print(f"Database bootstrap skipped: {e}")
+
     if 'session_id' not in session:
-        import uuid
         session['session_id'] = str(uuid.uuid4())
 
 @app.route('/get-order-data', methods = ['POST'])
@@ -561,7 +634,7 @@ def add_item():
     for img in images_data:
         header, encoded = img.split(",", 1)
         binary = base64.b64decode(encoded)
-        ext = imghdr.what(None, binary) or "png"
+        ext = _sniff_image_ext(binary)
         filename = f"{uuid.uuid4()}.{ext}"
 
         url = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{filename}"
@@ -690,7 +763,7 @@ def update_item(id):
     for img in images_data:
         header, encoded = img.split(",", 1)
         binary = base64.b64decode(encoded)
-        ext = imghdr.what(None, binary) or "png"
+        ext = _sniff_image_ext(binary)
         filename = f"{uuid.uuid4()}.{ext}"
 
         url = f"{SUPABASE_URL}/storage/v1/object/{BUCKET}/{filename}"
@@ -777,5 +850,17 @@ def admin_analysis():
                            total_orders=total_orders, 
                            total_revenue=int(total_revenue),
                            charts_data=json.dumps(charts_data))
+@app.route('/healthz')
+def healthz():
+    from sqlalchemy import text
+    db_status = 'ok'
+    try:
+        db.session.execute(text('SELECT 1'))
+    except Exception as e:
+        db.session.rollback()
+        db_status = f'error: {type(e).__name__}'
+    return jsonify({'status': 'ok', 'database': db_status, 'serverless': _IS_SERVERLESS})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
