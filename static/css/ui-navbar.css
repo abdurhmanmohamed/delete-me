@@ -1,0 +1,675 @@
+/* ==========================================================================
+   Five Star — Navigation
+   Restyles the existing .girly-* navbar markup. Every class name, id and
+   js-* hook is unchanged: only the presentation differs.
+   ========================================================================== */
+
+/* ---------- Shell ------------------------------------------------------- */
+.girly-header-container {
+  font-family: var(--fs-font) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1040;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  box-shadow: none;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.girly-header-container.scrolled {
+  top: 0 !important;
+  margin-top: 0;
+  width: 100%;
+  max-width: none;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: var(--fs-border);
+  box-shadow: 0 6px 24px rgba(23, 23, 28, 0.06);
+}
+
+.girly-navbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 0.7rem var(--fs-gutter);
+  transition: padding 0.25s ease;
+}
+
+.girly-header-container.scrolled .girly-navbar {
+  padding-block: 0.5rem;
+}
+
+/* ---------- Logo ------------------------------------------------------- */
+.girly-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+.girly-logo img {
+  width: 46px !important;
+  height: 46px !important;
+  object-fit: contain;
+  border-radius: var(--fs-r-md);
+  transition: transform 0.25s ease;
+}
+.girly-logo:hover img { transform: scale(1.04); }
+
+/* ---------- Primary menu ------------------------------------------------ */
+.girly-nav-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.girly-nav-menu li { list-style: none; }
+
+.girly-nav-menu > li > a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--fs-r-pill);
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: var(--fs-ink-2);
+  text-decoration: none;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+/* The old theme drew an underline; a soft pill is cleaner and works RTL. */
+.girly-nav-menu > li > a::after { display: none; content: none; }
+
+.girly-nav-menu > li > a:hover {
+  color: var(--fs-ink);
+  background: var(--fs-surface-2);
+}
+
+.girly-nav-menu .active-menu > a {
+  color: var(--fs-brand-strong);
+  background: var(--fs-brand-soft);
+  font-weight: 700;
+}
+
+/* ---------- Dropdown --------------------------------------------------- */
+.girly-dropdown { position: relative; }
+
+.girly-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  inset-inline-start: 50%;
+  transform: translateX(-50%) translateY(6px);
+  min-width: 250px;
+  padding: 0.5rem;
+  margin: 0;
+  list-style: none;
+  background: var(--fs-surface);
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-r-lg);
+  box-shadow: var(--fs-shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  z-index: 30;
+}
+
+.girly-dropdown:hover .girly-dropdown-menu,
+.girly-dropdown:focus-within .girly-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.girly-dropdown-menu li { margin: 0; }
+
+.girly-dropdown-menu li > a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--fs-r-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--fs-ink-2);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.girly-dropdown-menu li > a:hover {
+  background: var(--fs-surface-2);
+  color: var(--fs-ink);
+}
+.girly-dropdown-menu li > a i { color: var(--fs-ink-4); width: 1rem; text-align: center; }
+
+.girly-dropdown-header {
+  padding: 0.55rem 0.7rem 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fs-ink-4);
+}
+
+.girly-dropdown-divider {
+  height: 1px;
+  margin: 0.35rem 0.4rem;
+  background: var(--fs-border);
+}
+
+.girly-badge {
+  margin-inline-start: auto;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--fs-r-pill);
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--fs-surface-2);
+  color: var(--fs-ink-3);
+}
+.girly-badge.hot { background: var(--fs-danger-soft); color: var(--fs-danger); }
+.girly-badge.popular { background: var(--fs-warn-soft); color: var(--fs-warn); }
+
+/* ---------- Actions ---------------------------------------------------- */
+.girly-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.girly-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: var(--fs-r-pill);
+  background: transparent;
+  color: var(--fs-ink-2);
+  font-size: 1.15rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease,
+    border-color 0.18s ease, transform 0.18s ease;
+}
+
+.girly-icon-btn:hover {
+  background: var(--fs-surface-2);
+  border-color: var(--fs-border);
+  color: var(--fs-ink);
+}
+.girly-icon-btn:active { transform: scale(0.95); }
+
+.girly-icon-btn svg { width: 20px; height: 20px; }
+
+/* Cart count bubble — id required by JS */
+.girly-cart-badge {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--fs-r-pill);
+  background: var(--fs-brand);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--fs-surface);
+}
+
+/* ---------- Mobile toggle & drawer ------------------------------------- */
+.girly-mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-r-pill);
+  background: var(--fs-surface);
+  color: var(--fs-ink);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.girly-mobile-toggle:hover { background: var(--fs-surface-2); }
+.girly-mobile-toggle:active { transform: scale(0.95); }
+
+.girly-mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(23, 23, 28, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+.girly-mobile-drawer-overlay.active { opacity: 1; visibility: visible; }
+
+.girly-mobile-drawer {
+  position: fixed;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: 1060;
+  width: min(340px, 88vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--fs-surface);
+  border-inline-start: 1px solid var(--fs-border);
+  box-shadow: var(--fs-shadow-lg);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow-y: auto;
+}
+html[dir="rtl"] .girly-mobile-drawer { transform: translateX(-100%); }
+
+html[dir="rtl"] .girly-mobile-drawer.active,
+.girly-mobile-drawer.active { transform: translateX(0) !important; }
+
+.girly-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--fs-border);
+}
+.girly-drawer-header img { width: 96px; height: auto; }
+
+.girly-close-drawer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-r-pill);
+  background: var(--fs-surface);
+  color: var(--fs-ink-2);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.girly-close-drawer:hover { background: var(--fs-surface-2); }
+
+.girly-drawer-nav { padding: 0.5rem; }
+.girly-drawer-nav ul { margin: 0; padding: 0; list-style: none; }
+
+.girly-drawer-nav li > a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--fs-r-md);
+  color: var(--fs-ink-2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.girly-drawer-nav li > a:hover {
+  background: var(--fs-surface-2);
+  color: var(--fs-ink);
+}
+.girly-drawer-nav .drawer-sub-item { padding-inline-start: 1.1rem; font-weight: 500; }
+
+/* ---------- Search modal ------------------------------------------------ */
+/* girly-navbar.css locks this overlay down with !important declarations, so
+   these rules restate the same properties (same selector, loaded later) in
+   the new visual language instead of fighting specifics. */
+.modal-search-header {
+  position: fixed !important;
+  z-index: 1070 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.25rem;
+  background: rgba(23, 23, 28, 0.55) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  backdrop-filter: blur(6px) !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0.22s ease !important;
+}
+.modal-search-header.show-modal-search {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.container-search-header {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 620px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  transform: translateY(-8px);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-search-header.show-modal-search .container-search-header {
+  transform: translateY(0);
+}
+
+.btn-hide-modal-search {
+  position: absolute !important;
+  top: -3rem !important;
+  inset-inline-end: 0 !important;
+  width: 38px !important;
+  height: 38px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--fs-r-pill) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+.btn-hide-modal-search:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: none !important;
+}
+.btn-hide-modal-search img {
+  width: 14px;
+  height: 14px;
+  filter: invert(1);
+  opacity: 0.9;
+}
+
+.wrap-search-header {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0.4rem 0.45rem 0.4rem 0.4rem !important;
+  background: var(--fs-surface) !important;
+  border: 1px solid var(--fs-border) !important;
+  border-radius: var(--fs-r-pill) !important;
+  box-shadow: var(--fs-shadow-lg) !important;
+  overflow: visible !important;
+}
+
+.wrap-search-header input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 1rem !important;
+  border: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  font-family: var(--fs-font) !important;
+  font-size: 1rem !important;
+  color: var(--fs-ink) !important;
+}
+.wrap-search-header input::placeholder { color: var(--fs-ink-4) !important; }
+
+.wrap-search-header button {
+  flex: 0 0 auto;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 46px !important;
+  height: 46px !important;
+  border: 0 !important;
+  border-radius: var(--fs-r-pill) !important;
+  background: var(--fs-brand) !important;
+  color: #fff !important;
+  font-size: 1.15rem !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease !important;
+}
+.wrap-search-header button:hover { background: var(--fs-brand-strong) !important; }
+.wrap-search-header button img { filter: invert(1); }
+
+/* ---------- Slide-out cart --------------------------------------------- */
+.wrap-header-cart {
+  position: fixed;
+  inset: 0;
+  z-index: 1080;
+  visibility: hidden;
+  pointer-events: none;
+}
+.wrap-header-cart.show-header-cart { visibility: visible; pointer-events: auto; }
+
+.wrap-header-cart .s-full {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 23, 28, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.wrap-header-cart.show-header-cart .s-full { opacity: 1; }
+
+.header-cart {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: min(400px, 92vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  background: var(--fs-surface);
+  border-inline-start: 1px solid var(--fs-border);
+  box-shadow: var(--fs-shadow-lg);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Panel is anchored to the inline-end edge, so it must slide in from the
+   matching side in both directions. */
+html[dir="rtl"] .header-cart { transform: translateX(-100%); }
+html[dir="rtl"] .wrap-header-cart.show-header-cart .header-cart,
+.wrap-header-cart.show-header-cart .header-cart { transform: translateX(0) !important; }
+
+.header-cart-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.25rem !important;
+  border-bottom: 1px solid var(--fs-border);
+}
+.header-cart-title .mtext-103 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--fs-ink);
+}
+.header-cart-title .js-hide-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 1.1rem !important;
+  border-radius: var(--fs-r-pill);
+  cursor: pointer;
+  color: var(--fs-ink-3) !important;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.header-cart-title .js-hide-cart:hover { background: var(--fs-surface-2); }
+.header-cart-title .js-hide-cart:hover { color: var(--fs-ink); }
+
+.header-cart-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem 1.25rem !important;
+}
+
+/* Cart rows are injected by main.js — these rules skin them. */
+#cart-items { list-style: none; margin: 0; padding: 0; }
+
+.header-cart #cart-items .cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+  border: 1px solid var(--fs-border);
+  border-radius: var(--fs-r-md);
+  background: var(--fs-surface);
+  box-shadow: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.header-cart #cart-items .cart-item:hover {
+  border-color: var(--fs-border-strong);
+  box-shadow: var(--fs-shadow-xs);
+}
+
+.header-cart #cart-items .cart-item-img img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: var(--fs-r-sm);
+}
+
+.header-cart #cart-items .cart-item-info { flex: 1; min-width: 0; }
+.header-cart #cart-items .cart-item-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--fs-ink);
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-cart #cart-items .cart-item-price h6 {
+  margin: 0;
+  font-size: 0.82rem !important;
+  font-weight: 600;
+  color: var(--fs-ink-3) !important;
+}
+
+.header-cart #cart-items .cart-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--fs-r-pill);
+  background: transparent;
+  color: var(--fs-ink-4);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.header-cart #cart-items .cart-delete-btn:hover {
+  background: var(--fs-danger-soft);
+  color: var(--fs-danger);
+}
+
+.header-cart-total {
+  display: flex;
+  margin-top: 0 !important;
+  padding: 1rem 0 !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--fs-border);
+  font-weight: 700;
+  color: var(--fs-ink);
+}
+.header-cart-total #total-price { color: var(--fs-brand-strong); }
+
+.header-cart-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.header-cart-buttons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: var(--fs-r-pill) !important;
+  font-weight: 700 !important;
+  font-size: 0.92rem !important;
+}
+.header-cart-buttons a:first-child {
+  background: var(--fs-surface) !important;
+  color: var(--fs-ink) !important;
+  border: 1px solid var(--fs-border-strong) !important;
+  box-shadow: var(--fs-shadow-xs);
+}
+.header-cart-buttons a:first-child:hover {
+  background: var(--fs-surface-2) !important;
+  border-color: var(--fs-ink-4) !important;
+}
+.header-cart-buttons a:last-child {
+  background: var(--fs-brand) !important;
+  color: #fff !important;
+}
+.header-cart-buttons a:last-child:hover {
+  background: var(--fs-brand-strong) !important;
+}
+
+/* ---------- Responsive -------------------------------------------------- */
+@media (max-width: 991px) {
+  .girly-navbar {
+    grid-template-columns: auto 1fr;
+    padding-block: 0.65rem;
+  }
+  .girly-nav-menu { display: none; }
+  .girly-mobile-toggle { display: inline-flex; }
+  .girly-actions { gap: 0.35rem; }
+  .girly-user-menu.desktop-only { display: none; }
+}
+
+@media (max-width: 480px) {
+  .girly-logo img { width: 38px !important; height: 38px !important; }
+  .girly-icon-btn,
+  .girly-mobile-toggle { width: 36px; height: 36px; }
+}
+
+/* Group headings inside the drawer are <li> elements with inline styling.
+   Overriding the individual properties keeps the markup (and its semantics)
+   untouched while bringing them onto the new palette. */
+.girly-drawer-nav > ul > li:not(:has(> a)) {
+  padding: 1.1rem 0.85rem 0.4rem !important;
+  color: var(--fs-ink-4) !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  border-bottom: 0 !important;
+}
+
+/* Drawer footer actions (login / register when signed out) */
+.girly-drawer-nav .drawer-sub-item { padding-inline-start: 1.6rem; }
+
+@media (max-width: 480px) {
+  .girly-mobile-drawer { width: 100vw; }
+}
