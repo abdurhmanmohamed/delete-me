@@ -850,17 +850,6 @@ def admin_analysis():
                            total_orders=total_orders, 
                            total_revenue=int(total_revenue),
                            charts_data=json.dumps(charts_data))
-@app.errorhandler(404)
-def _debug_not_found(e):
-    # TEMPORARY diagnostics: report exactly what the runtime handed to Flask.
-    return jsonify({
-        'flask_path': request.path,
-        'url': request.url,
-        'script_root': request.script_root,
-        'headers': {k: v for k, v in request.headers.items() if k.lower().startswith('x-')},
-    }), 404
-
-
 @app.route('/healthz')
 def healthz():
     from sqlalchemy import text
